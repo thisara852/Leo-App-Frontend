@@ -9,7 +9,7 @@ import CompleteProfileScreen from './screens/CompleteProfileScreen';
 import HomeFeedScreen from './screens/HomeFeedScreen';
 import PostDetailScreen from './screens/PostDetailScreen';
 import ProfileScreen from './screens/ProfileScreen';
-import EditProfileScreen from './screens/EditProfile';
+import EditProfileScreen from './screens/EditProfile'; // Ensure this path is correct
 import SearchScreen from './screens/SearchScreen';
 import NotificationScreen from './screens/NotificationScreen';
 import StoryViewScreen from './screens/StoryViewScreen';
@@ -27,6 +27,7 @@ const App = () => {
   const [params, setParams] = useState(null);
 
   // ✅ CENTRAL NAVIGATION FUNCTION
+  // This function is what changes the state and tells the Switch statement which screen to show
   const navigate = (screenName, screenParams = null) => {
     setParams(screenParams);
     setScreen(screenName);
@@ -58,7 +59,6 @@ const App = () => {
       case 'Onboarding':
         return <OnboardingFlow setScreen={navigate} />;
 
-      // ✅ FIX: Added 'Login' case back so your old navigation calls don't break
       case 'Auth': 
       case 'Login': 
         return (
@@ -83,10 +83,11 @@ const App = () => {
       case 'PostDetail':
         return <PostDetailScreen setScreen={navigate} />;
 
-      case 'Profile': // This is your Settings screen
+      case 'Profile': 
         return <ProfileScreen setScreen={navigate} />;
 
       case 'EditProfile':
+        // ✅ Passing navigate to setScreen prop so the back button works
         return <EditProfileScreen setScreen={navigate} />;
 
       case 'Search':
@@ -123,7 +124,6 @@ const App = () => {
         );
 
       default:
-        // Fallback to HomeFeed if screen name is not recognized
         return (
           <HomeFeedScreen
             setScreen={navigate}
