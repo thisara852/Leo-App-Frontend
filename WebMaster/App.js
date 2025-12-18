@@ -1,4 +1,3 @@
-// App.js
 import React, { useState } from 'react';
 import { View, StatusBar } from 'react-native';
 
@@ -15,7 +14,7 @@ import SearchScreen from './screens/SearchScreen';
 import NotificationScreen from './screens/NotificationScreen';
 import StoryViewScreen from './screens/StoryViewScreen';
 
-// ⭐ NEWLY ADDED — IMPORTANT
+// New Screens
 import DistrictScreen from './screens/District';
 import ClubsScreen from './screens/Clubs';
 
@@ -25,21 +24,19 @@ import { styles } from './styles';
 const App = () => {
   const [screen, setScreen] = useState('Splash');
   const [storyImage, setStoryImage] = useState(null);
-
-  // ⭐ Screen params state
   const [params, setParams] = useState(null);
 
-  // ⭐ Custom Navigation Handler
-  const navigate = (name, screenParams = null) => {
+  // ✅ CENTRAL NAVIGATION FUNCTION
+  const navigate = (screenName, screenParams = null) => {
     setParams(screenParams);
-    setScreen(name);
+    setScreen(screenName);
   };
 
   const handleAuthSuccess = () => navigate('CompleteProfile');
 
   const handleIconClick = (icon) => {
     if (icon === 'Profile') navigate('EditProfile');
-    if (icon === 'Setting') navigate('Profile');
+    if (icon === 'Setting') navigate('Profile'); // Navigates to Settings page
   };
 
   const openStory = (imageUri) => {
@@ -52,7 +49,7 @@ const App = () => {
     navigate('HomeFeed');
   };
 
-  // 🔥 ALL SCREENS HANDLED HERE
+  // 🔥 RENDER LOGIC
   const renderScreen = () => {
     switch (screen) {
       case 'Splash':
@@ -61,7 +58,9 @@ const App = () => {
       case 'Onboarding':
         return <OnboardingFlow setScreen={navigate} />;
 
-      case 'Login':
+      // ✅ FIX: Added 'Login' case back so your old navigation calls don't break
+      case 'Auth': 
+      case 'Login': 
         return (
           <AuthScreen
             onLoginSuccess={handleAuthSuccess}
@@ -84,7 +83,7 @@ const App = () => {
       case 'PostDetail':
         return <PostDetailScreen setScreen={navigate} />;
 
-      case 'Profile':
+      case 'Profile': // This is your Settings screen
         return <ProfileScreen setScreen={navigate} />;
 
       case 'EditProfile':
@@ -100,13 +99,11 @@ const App = () => {
         return (
           <StoryViewScreen
             storyImage={storyImage}
-            navigation={{ goBack: closeStory }}
             onClose={closeStory}
             setScreen={navigate}
           />
         );
 
-      // ⭐✔ NEWLY ADDED — NOW IT WORKS
       case 'District':
         return (
           <DistrictScreen
@@ -116,7 +113,6 @@ const App = () => {
           />
         );
 
-      // ⭐ Optional for clubs
       case 'Clubs':
         return (
           <ClubsScreen
@@ -127,6 +123,7 @@ const App = () => {
         );
 
       default:
+        // Fallback to HomeFeed if screen name is not recognized
         return (
           <HomeFeedScreen
             setScreen={navigate}
