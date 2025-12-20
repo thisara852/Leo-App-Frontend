@@ -1,217 +1,228 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  StyleSheet,
-  TextInput,
-  Image,
-  Alert,
-} from "react-native";
-import Icon from "react-native-vector-icons/Ionicons";
-import { getPosts, deletePost } from "../../services/adminService";
+    StyleSheet,
+    Text,
+    View,
+    TouchableOpacity,
+    SafeAreaView,
+    FlatList,
+    Image,
+    Alert,
+    StatusBar,
+    Dimensions
+} from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 
-const LeoFeedPost = ({ post, onDelete }) => (
-  <TouchableOpacity activeOpacity={0.9} style={styles.feedPost}>
-    {/* Post Header */}
-    <View style={styles.postHeader}>
-      <Image
-        source={
-          post.avatar
-            ? { uri: post.avatar }
-            : require("../../assets/Leo-District-Logo-306-D3-2.png")
+const { width } = Dimensions.get('window');
+
+const ManagePosts = ({ navigation }) => {
+    const [activeDistrict, setActiveDistrict] = useState('All');
+    const [activeClub, setActiveClub] = useState('All');
+
+    // Mock Data - This mimics a database of pending posts
+    const [posts, setPosts] = useState([
+        {
+            id: '1',
+            userName: 'Kamal Silva',
+            district: '306-B1',
+            club: 'Moratuwa',
+            time: '2h ago',
+            content: 'Successful Beach Cleanup project completed today with 50+ volunteers! Our district is making a change. 🌊',
+            image: 'https://images.unsplash.com/photo-1618477461853-cf6ed80fbe5e?w=800',
+            status: 'Pending'
+        },
+        {
+            id: '2',
+            userName: 'Nuwan Perera',
+            district: '306-C2',
+            club: 'Colombo Fort',
+            time: '5h ago',
+            content: 'Join us for the upcoming Youth Leadership Summit next Saturday at BMICH. Register now!',
+            image: 'https://images.unsplash.com/photo-1526628953301-3e589a6a8b74?w=800',
+            status: 'Pending'
+        },
+        {
+            id: '3',
+            userName: 'Aruni Jay',
+            district: '306-A1',
+            club: 'Kandy',
+            time: '12h ago',
+            content: 'New community kitchen initiative starting this Monday. Need volunteers for food prep.',
+            image: null,
+            status: 'Pending'
         }
-        style={styles.postAvatar}
-      />
-      <View style={styles.postUserInfo}>
-        <Text style={styles.postUsername}>{post.author || "Leo-D3"}</Text>
-        <Text style={styles.postTime}>{post.date || "Just now"}</Text>
-      </View>
-    
-    </View>
+    ]);
 
-    {/* Post Text */}
-    <Text style={styles.postTextGold}>{post.description || post.title}</Text>
+    const handleAction = (id, action) => {
+        Alert.alert(
+            `${action} Post?`,
+            `Do you want to ${action.toLowerCase()} this post for the community?`,
+            [
+                { text: 'Cancel', style: 'cancel' },
+                { 
+                    text: action, 
+                    style: action === 'Reject' ? 'destructive' : 'default',
+                    onPress: () => {
+                        // Remove post from list after action
+                        setPosts(posts.filter(p => p.id !== id));
+                    } 
+                }
+            ]
+        );
+    };
 
-    {/* Post Image */}
-    <Image
-      source={
-        post.image
-          ? { uri: post.image }
-          : require("../../assets/qw.jpg")
-      }
-      style={styles.feedPostImage}
-    />
+    const renderPost = ({ item }) => (
+        <View style={styles.postCard}>
+            {/* Header: User Info */}
+            <View style={styles.postHeader}>
+                <View style={styles.userInfo}>
+                    <View style={styles.userAvatar}>
+                        <Text style={styles.avatarText}>{item.userName[0]}</Text>
+                    </View>
+                    <View>
+                        <Text style={styles.userName}>{item.userName}</Text>
+                        <Text style={styles.metaText}>{item.district} • {item.club} • {item.time}</Text>
+                    </View>
+                </View>
+                <View style={styles.pendingBadge}>
+                    <Text style={styles.pendingText}>PENDING</Text>
+                </View>
+            </View>
 
-    {/* Post Footer */}
-    <View style={styles.postFooter}>
-      <View style={styles.reactionIcons}>
-        <Icon
-          name="heart-outline"
-          size={20}
-          color="#fff"
-          style={{ marginRight: 15 }}
-        />
-        <Icon
-          name="chatbubble-outline"
-          size={20}
-          color="#fff"
-          style={{ marginRight: 15 }}
-        />
-        <Icon
-          name="paper-plane-outline"
-          size={20}
-          color="#fff"
-          style={{ marginRight: 15 }}
-        />
-        <Icon
-          name="link-outline"
-          size={20}
-          color="#fff"
-          style={{ marginRight: 15 }}
-        />
-      </View>
-      <Text style={styles.likeText}>
-        Liked by mr.beast and {post.likes || 0} others
-      </Text>
-      <Text style={styles.viewCount}>{post.views || 0}K Views</Text>
+            {/* Content: Text & Image */}
+            <Text style={styles.postContent}>{item.content}</Text>
+            {item.image && (
+                <Image source={{ uri: item.image }} style={styles.postImage} resizeMode="cover" />
+            )}
 
-      {/* Delete button */}
-<View style={styles.actions}>
-  <TouchableOpacity
-    style={styles.approveBtn}
-    onPress={() => onApprove(post.id)}
-  >
-    <Text style={styles.btnText}>Approve</Text>
-  </TouchableOpacity>
+            {/* Action Bar */}
+            <View style={styles.actionRow}>
+                <TouchableOpacity 
+                    style={[styles.btn, styles.rejectBtn]} 
+                    onPress={() => handleAction(item.id, 'Reject')}
+                >
+                    <Icon name="close-circle" size={18} color="#FF4444" />
+                    <Text style={styles.rejectText}>Reject</Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity 
+                    style={[styles.btn, styles.approveBtn]} 
+                    onPress={() => handleAction(item.id, 'Approve')}
+                >
+                    <Icon name="checkmark-circle" size={18} color="#000" />
+                    <Text style={styles.approveText}>Approve Post</Text>
+                </TouchableOpacity>
+            </View>
+        </View>
+    );
 
-  <TouchableOpacity
-    style={styles.deleteBtn}
-    onPress={() => onDelete(post.id)}
-  >
-    <Text style={styles.btnText}>Delete</Text>
-  </TouchableOpacity>
-</View>
+    return (
+        <SafeAreaView style={styles.container}>
+            <StatusBar barStyle="light-content" />
+            
+            {/* TOP HEADER */}
+            <View style={styles.header}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+                    <Icon name="arrow-back" size={24} color="#FFF" />
+                </TouchableOpacity>
+                <Text style={styles.headerTitle}>Post Moderation</Text>
+                <View style={styles.badgeCount}>
+                    <Text style={styles.badgeText}>{posts.length}</Text>
+                </View>
+            </View>
 
-    </View>
-  </TouchableOpacity>
-);
+            {/* NESTED FILTER SYSTEM */}
+            <View style={styles.filterSection}>
+                <Text style={styles.filterLabel}>Filter by District</Text>
+                <FlatList 
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    data={['All', '306-A1', '306-B1', '306-C2']}
+                    keyExtractor={(item) => `district-${item}`}
+                    renderItem={({ item }) => (
+                        <TouchableOpacity 
+                            onPress={() => setActiveDistrict(item)}
+                            style={[styles.tab, activeDistrict === item && styles.activeTab]}
+                        >
+                            <Text style={[styles.tabLabel, activeDistrict === item && styles.activeTabLabel]}>{item}</Text>
+                        </TouchableOpacity>
+                    )}
+                />
+                
+                <Text style={[styles.filterLabel, { marginTop: 15 }]}>Filter by Club</Text>
+                <FlatList 
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    data={['All', 'Moratuwa', 'Colombo Fort', 'Kandy']}
+                    keyExtractor={(item) => `club-${item}`}
+                    renderItem={({ item }) => (
+                        <TouchableOpacity 
+                            onPress={() => setActiveClub(item)}
+                            style={[styles.tab, activeClub === item && styles.activeTab]}
+                        >
+                            <Text style={[styles.tabLabel, activeClub === item && styles.activeTabLabel]}>{item}</Text>
+                        </TouchableOpacity>
+                    )}
+                />
+            </View>
 
-export default function ManagePosts({ route }) {
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
-
-  const loadPosts = async () => {
-    setLoading(true);
-    const data = await getPosts();
-    setPosts(data);
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    loadPosts();
-  }, []);
-
-  const handleDelete = async (id) => {
-    await deletePost(id);
-    Alert.alert("Success", "Post deleted");
-    loadPosts();
-    route.params?.refreshDashboard?.();
-  };
-
-  const filteredPosts = posts.filter(
-    (post) =>
-      post.description?.toLowerCase().includes(search.toLowerCase()) ||
-      post.author?.toLowerCase().includes(search.toLowerCase()) ||
-      post.title?.toLowerCase().includes(search.toLowerCase())
-  );
-
-  return (
-    <View style={styles.container}>
-
-      {/* Search Box */}
-      <TextInput
-        style={styles.search}
-        placeholder="Search by description, title or author"
-        placeholderTextColor="#555"
-        value={search}
-        onChangeText={setSearch}
-      />
-
-      {/* Posts Feed */}
-      <FlatList
-        data={filteredPosts}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <LeoFeedPost post={item} onDelete={handleDelete}  />
-        )}
-        refreshing={loading}
-        onRefresh={loadPosts}
-        contentContainerStyle={{ paddingBottom: 20 }}
-      />
-    </View>
-  );
-}
+            {/* POST LIST */}
+            <FlatList
+                data={posts.filter(p => 
+                    (activeDistrict === 'All' || p.district === activeDistrict) &&
+                    (activeClub === 'All' || p.club === activeClub)
+                )}
+                keyExtractor={item => item.id}
+                renderItem={renderPost}
+                contentContainerStyle={{ padding: 15, paddingBottom: 50 }}
+                ListEmptyComponent={
+                    <View style={styles.emptyState}>
+                        <Icon name="checkmark-done-circle" size={80} color="#1A1A1A" />
+                        <Text style={styles.emptyText}>No pending posts to review.</Text>
+                    </View>
+                }
+            />
+        </SafeAreaView>
+    );
+};
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: "#000" },
-  topBar: { flexDirection: "row", alignItems: "center", marginTop: 35, marginBottom: 20 },
-  titleBar: { fontSize: 24, fontWeight: "bold", marginLeft: 10, color: "#FFD700" },
-  search: {
-    borderWidth: 1,
-    padding: 10,
-    marginBottom: 15,
-    borderRadius: 8,
-    backgroundColor: "#222",
-    borderColor: "#555",
-    color: "#fff",
-  },
+    container: { flex: 1, backgroundColor: '#000' },
+    header: { flexDirection: 'row', alignItems: 'center', padding: 20, justifyContent: 'space-between' },
+    backBtn: { width: 45, height: 45, borderRadius: 15, backgroundColor: '#111', justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#222' },
+    headerTitle: { color: '#FFF', fontSize: 18, fontWeight: 'bold' },
+    badgeCount: { backgroundColor: '#FFC700', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 12 },
+    badgeText: { color: '#000', fontWeight: 'bold', fontSize: 12 },
 
-  feedPost: {
-    backgroundColor: "#111",
-    borderRadius: 16,
-    marginVertical: 10,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: "#FFD70030",
-  },
-actions: {
-  flexDirection: "row",
-  justifyContent: "space-between",
-  marginBottom: 10,
-},
-approveBtn: {
-  backgroundColor: "#00C851",
-  padding: 10,
-  borderRadius: 8,
-  width: "48%",
-  alignItems: "center",
-},
-deleteBtn: {
-  backgroundColor: "#ff4444",
-  padding: 10,
-  borderRadius: 8,
-  width: "48%",
-  alignItems: "center",
-},
-btnText: { color: "#fff", fontWeight: "bold" },
+    filterSection: { paddingHorizontal: 20, marginBottom: 15 },
+    filterLabel: { color: '#444', fontSize: 10, fontWeight: 'bold', textTransform: 'uppercase', marginBottom: 8, letterSpacing: 1 },
+    tab: { paddingHorizontal: 16, paddingVertical: 10, borderRadius: 14, marginRight: 10, backgroundColor: '#111', borderWidth: 1, borderColor: '#222' },
+    activeTab: { backgroundColor: '#FFC700', borderColor: '#FFC700' },
+    tabLabel: { color: '#888', fontSize: 12, fontWeight: 'bold' },
+    activeTabLabel: { color: '#000' },
 
-  postHeader: { flexDirection: "row", alignItems: "center", marginBottom: 10 },
-  postAvatar: { width: 40, height: 40, borderRadius: 20, marginRight: 10, backgroundColor: "#333" },
-  postUserInfo: { flex: 1 },
-  postUsername: { color: "#FFD700", fontWeight: "bold", fontSize: 16 },
-  postTime: { color: "#ccc", fontSize: 12 },
-  bookmarkIcon: { padding: 4 },
+    postCard: { backgroundColor: '#111', borderRadius: 28, padding: 18, marginBottom: 20, borderWidth: 1, borderColor: '#1A1A1A' },
+    postHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 15 },
+    userInfo: { flexDirection: 'row', alignItems: 'center' },
+    userAvatar: { width: 42, height: 42, borderRadius: 14, backgroundColor: '#1A1A1A', justifyContent: 'center', alignItems: 'center', marginRight: 12, borderWidth: 1, borderColor: '#333' },
+    avatarText: { color: '#FFC700', fontWeight: 'bold', fontSize: 16 },
+    userName: { color: '#FFF', fontSize: 15, fontWeight: 'bold' },
+    metaText: { color: '#666', fontSize: 11, marginTop: 2 },
+    pendingBadge: { backgroundColor: '#FFC70015', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 },
+    pendingText: { color: '#FFC700', fontSize: 9, fontWeight: 'bold', letterSpacing: 0.5 },
 
-  postTextGold: { color: "#FFD700", fontSize: 14, marginBottom: 10 },
+    postContent: { color: '#EEE', fontSize: 14, lineHeight: 22, marginBottom: 15 },
+    postImage: { width: '100%', height: 220, borderRadius: 20, marginBottom: 18 },
 
-  feedPostImage: { width: "100%", height: 180, borderRadius: 12, marginBottom: 10 },
+    actionRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 12 },
+    btn: { flex: 1, flexDirection: 'row', height: 48, borderRadius: 16, justifyContent: 'center', alignItems: 'center', gap: 8 },
+    rejectBtn: { backgroundColor: '#FF444410', borderWidth: 1, borderColor: '#FF444430' },
+    approveBtn: { backgroundColor: '#FFC700' },
+    rejectText: { color: '#FF4444', fontWeight: 'bold', fontSize: 14 },
+    approveText: { color: '#000', fontWeight: 'bold', fontSize: 14 },
 
-  postFooter: { marginTop: 5 },
-  reactionIcons: { flexDirection: "row", marginBottom: 5 },
-  likeText: { color: "#fff", fontSize: 12, marginBottom: 2 },
-  viewCount: { color: "#fff", fontSize: 12, marginBottom: 5 },
-  
+    emptyState: { alignItems: 'center', marginTop: 120 },
+    emptyText: { color: '#333', marginTop: 15, fontSize: 16, fontWeight: '500' }
 });
+
+export default ManagePosts;
