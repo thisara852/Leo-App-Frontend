@@ -1,4 +1,3 @@
-// HomeFeedScreen.js
 import React, { useState } from 'react';
 import {
   SafeAreaView,
@@ -25,12 +24,37 @@ const TEXT_LIGHT = '#F3F4F6';
 const INACTIVE_TAB_COLOR = '#9CA3AF';
 const SECONDARY_DARK = '#1F1F1F';
 
-// Custom App Icon
+// Custom Icon
 const CustomAppIcon = ({ name, size = 20, color = TEXT_LIGHT, style }) => (
   <Icon name={name} size={size} color={color} style={style} />
 );
 
-// Story Components
+// 🔹 HEADER (Linked to SearchScreen and NotificationScreen)
+const HomeHeader = ({ setScreen }) => (
+  <View style={styles.headerContainer}>
+    <View>
+      <Text style={styles.welcomeText}>Welcome Back!</Text>
+      <Text style={styles.userName}>Akarsha</Text>
+    </View>
+
+    <View style={styles.headerIcons}>
+      <TouchableOpacity
+        style={{ marginRight: 18 }}
+        onPress={() => setScreen('SearchScreen')}
+      >
+        <CustomAppIcon name="search-outline" size={22} color={PRIMARY_GOLD} />
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={() => setScreen('NotificationScreen')}
+      >
+        <CustomAppIcon name="notifications-outline" size={22} color={PRIMARY_GOLD} />
+      </TouchableOpacity>
+    </View>
+  </View>
+);
+
+// Story Circle
 const StoryCircle = ({ label, uri, isNew = false, onPress }) => (
   <TouchableOpacity onPress={onPress} style={{ alignItems: 'center', marginRight: 15 }}>
     <View
@@ -57,53 +81,21 @@ const StoriesBar = ({ openStory }) => {
     { label: 'Leo D11', uri: require('../assets/Leo-District-Logo-306-D11.png'), isNew: true, image: 'https://placekitten.com/800/1400' },
     { label: 'Leo D2', uri: require('../assets/Leo-District-Logo-306-D2.png'), image: 'https://placekitten.com/801/1400' },
     { label: 'Leo Club 3', uri: require('../assets/Leo-District-Logo-306-D3.png'), image: 'https://placekitten.com/802/1400' },
-    { label: 'Leo Club 5', uri: require('../assets/Leo-District-Logo-306-D5.png'), image: 'https://placekitten.com/802/1400' },
+    { label: 'Leo Club 5', uri: require('../assets/Leo-District-Logo-306-D5.png'), image: 'https://placekitten.com/803/1400' },
   ];
 
   return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      style={{ marginVertical: 10, paddingHorizontal: 15 }}
-    >
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginVertical: 10, paddingHorizontal: 15 }}>
       {stories.map((story, index) => (
-        <StoryCircle
-          key={index}
-          {...story}
-          onPress={() => openStory(story.image)}
-        />
+        <StoryCircle key={index} {...story} onPress={() => openStory(story.image)} />
       ))}
     </ScrollView>
   );
 };
 
-// Tab Segment
-const TabSegment = ({ activeTab, setActiveTab }) => {
-  const tabs = ['All Post', 'Following', 'Event'];
-  return (
-    <View style={{ flexDirection: 'row', justifyContent: 'space-around', width: '100%', marginVertical: 10 }}>
-      {tabs.map((tab) => {
-        const isActive = activeTab === tab;
-        return (
-          <TouchableOpacity key={tab} onPress={() => setActiveTab(tab)}>
-            <Text style={{ color: isActive ? PRIMARY_GOLD : INACTIVE_TAB_COLOR, fontWeight: isActive ? 'bold' : 'normal' }}>
-              {tab}
-            </Text>
-            {isActive && <View style={{ height: 2, backgroundColor: PRIMARY_GOLD, marginTop: 3 }} />}
-          </TouchableOpacity>
-        );
-      })}
-    </View>
-  );
-};
-
-// Feed Post Component
+// Feed Post
 const LeoFeedPost = ({ name, time, views, likes, image, text, onPress }) => {
   const [bookmarked, setBookmarked] = useState(false);
-
-  const toggleBookmark = () => {
-    setBookmarked(!bookmarked);
-  };
 
   return (
     <TouchableOpacity onPress={onPress} activeOpacity={0.9} style={styles.feedPost}>
@@ -113,24 +105,24 @@ const LeoFeedPost = ({ name, time, views, likes, image, text, onPress }) => {
           <Text style={styles.postUsername}>{name}</Text>
           <Text style={styles.postTime}>{time}</Text>
         </View>
-        <TouchableOpacity style={styles.bookmarkIcon} onPress={toggleBookmark}>
+        <TouchableOpacity onPress={() => setBookmarked(!bookmarked)}>
           <CustomAppIcon
-            name={bookmarked ? "bookmark" : "bookmark-outline"}
+            name={bookmarked ? 'bookmark' : 'bookmark-outline'}
             size={20}
-            color={bookmarked ? PRIMARY_GOLD : "#9CA3AF"}
+            color={bookmarked ? PRIMARY_GOLD : INACTIVE_TAB_COLOR}
           />
         </TouchableOpacity>
       </View>
 
-      {text ? <Text style={styles.postTextGold}>{text}</Text> : null}
-      {image ? <Image source={image} style={styles.feedPostImage} /> : null}
+      {text && <Text style={styles.postTextGold}>{text}</Text>}
+      {image && <Image source={image} style={styles.feedPostImage} />}
 
       <View style={styles.postFooter}>
         <View style={styles.reactionIcons}>
-          <CustomAppIcon name="heart-outline" size={20} color={TEXT_LIGHT} style={{ marginRight: 15 }} />
-          <CustomAppIcon name="chatbubble-outline" size={20} color={TEXT_LIGHT} style={{ marginRight: 15 }} />
-          <CustomAppIcon name="paper-plane-outline" size={20} color={TEXT_LIGHT} style={{ marginRight: 15 }} />
-          <CustomAppIcon name="link-outline" size={20} color={TEXT_LIGHT} style={{ marginRight: 15 }} />
+          <CustomAppIcon name="heart-outline" size={20} />
+          <CustomAppIcon name="chatbubble-outline" size={20} />
+          <CustomAppIcon name="paper-plane-outline" size={20} />
+          <CustomAppIcon name="link-outline" size={20} />
         </View>
         <Text style={styles.likeText}>Liked by mr.beast and {likes} others</Text>
         <Text style={styles.viewCount}>{views}K Views</Text>
@@ -139,172 +131,174 @@ const LeoFeedPost = ({ name, time, views, likes, image, text, onPress }) => {
   );
 };
 
-// Home Feed Screen
+// MAIN SCREEN
 const HomeFeedScreen = ({ setScreen, openStory }) => {
-  const [activeTab, setActiveTab] = useState('Following');
-  const [currentBottomScreen, setCurrentBottomScreen] = useState('HomeFeed');
+  const [selectedTab, setSelectedTab] = useState('Following');
+
   const [posts, setPosts] = useState([
-    { name: "Leo District 306 D1", time: "08:39 am", views: "56", likes: "34", image: require('../assets/post1.jpg'), text: "LMP 2025 LMD 306 Rangers Is LIVE!" },
+    {
+      name: "Leo District 306 D1",
+      time: "08:39 am",
+      views: "56",
+      likes: "34",
+      image: require('../assets/post1.jpg'),
+      text: "LMP 2025 LMD 306 Rangers Is LIVE!",
+    },
+    {
+      name: "Leo Club Colombo",
+      time: "09:10 am",
+      views: "42",
+      likes: "28",
+      image: require('../assets/post2.jpg'),
+      text: "Successful beach cleanup project completed 🌊♻️",
+    },
+    {
+      name: "Leo District 306 D2",
+      time: "10:05 am",
+      views: "78",
+      likes: "51",
+      image: require('../assets/post3.jpg'),
+      text: "Leadership workshop highlights 💡🔥",
+    },
+    {
+      name: "Leo Club Kandy",
+      time: "11:20 am",
+      views: "33",
+      likes: "19",
+      image: require('../assets/post4.jpg'),
+      text: "Blood donation campaign – Thank you heroes ❤️",
+    },
   ]);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [newPostText, setNewPostText] = useState('');
-  const [newPostImage, setNewPostImage] = useState(null);
-
-  const handlePostClick = () => {
-    setScreen('PostDetail');
-  };
-
-  const openImagePicker = async () => {
-    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (permission.granted === false) return alert('Permission required!');
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 1,
-    });
-    if (!result.canceled) setNewPostImage({ uri: result.assets[0].uri });
-  };
-
-  const createPost = () => {
-    if (!newPostText && !newPostImage) return alert('Add text or image!');
-    const newPost = {
-      name: "You",
-      time: "Just now",
-      views: "0",
-      likes: "0",
-      text: newPostText,
-      image: newPostImage,
-    };
-    setPosts([newPost, ...posts]);
-    setModalVisible(false);
-    setNewPostText('');
-    setNewPostImage(null);
-  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: BG_DARK }}>
-      <RNStatusBar barStyle="light-content" backgroundColor={BG_DARK} />
+      <RNStatusBar barStyle="light-content" />
 
-      {/* Header */}
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 15 }}>
-        <View>
-          <Text style={{ color: TEXT_LIGHT, fontSize: 18 }}>Welcome Back!</Text>
-        </View>
+      <ScrollView style={{ flex: 1 }}>
+        {/* 🔹 HEADER */}
+        <HomeHeader setScreen={setScreen} />
 
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <TouchableOpacity onPress={() => setScreen('Search')} style={{ marginRight: 15 }}>
-            <CustomAppIcon name="search-outline" size={24} color={PRIMARY_GOLD} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setScreen('Notification')} style={{ marginRight: 15 }}>
-            <CustomAppIcon name="notifications-outline" size={24} color={PRIMARY_GOLD} />
-          </TouchableOpacity>
-        </View>
-      </View>
-
- 
-
-      {/* Feed */}
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 80 }}>
         <StoriesBar openStory={openStory} />
-             {/* Create Post Button */}
-      <TouchableOpacity
-        onPress={() => setModalVisible(true)}
-        style={{
-          backgroundColor: PRIMARY_GOLD,
-          marginHorizontal: 15,
-          padding: 10,
-          borderRadius: 8,
-          alignItems: 'center',
-          marginBottom: 10,
-        }}
-      >
-        <Text style={{ color: BG_DARK, fontWeight: 'bold' }}>Create Post</Text>
-      </TouchableOpacity>
-        <TabSegment activeTab={activeTab} setActiveTab={setActiveTab} />
+
+        {/* 🔹 TAB SECTION */}
+        <View style={styles.tabBar}>
+          <TouchableOpacity onPress={() => setSelectedTab('All Post')} style={styles.tabItem}>
+            <Text style={[styles.tabText, selectedTab === 'All Post' && styles.activeTabText]}>All Post</Text>
+            {selectedTab === 'All Post' && <View style={styles.activeIndicator} />}
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => setSelectedTab('Following')} style={styles.tabItem}>
+            <Text style={[styles.tabText, selectedTab === 'Following' && styles.activeTabText]}>Following</Text>
+            {selectedTab === 'Following' && <View style={styles.activeIndicator} />}
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => setSelectedTab('Event')} style={styles.tabItem}>
+            <Text style={[styles.tabText, selectedTab === 'Event' && styles.activeTabText]}>Event</Text>
+            {selectedTab === 'Event' && <View style={styles.activeIndicator} />}
+          </TouchableOpacity>
+        </View>
 
         {posts.map((post, index) => (
-          <LeoFeedPost
-            key={index}
-            {...post}
-            onPress={handlePostClick}
-          />
+          <LeoFeedPost key={index} {...post} onPress={() => setScreen('PostDetail')} />
         ))}
       </ScrollView>
 
-      {/* Bottom Navigation */}
-      <View style={{
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        paddingVertical: 10,
-        backgroundColor: SECONDARY_DARK,
-      }}>
-        {['HomeFeed', 'Search', 'Notification', 'Setting', 'Profile'].map(screen => {
-          let iconName;
-          if (screen === 'HomeFeed') iconName = 'home-outline';
-          if (screen === 'Search') iconName = 'search-outline';
-          if (screen === 'Notification') iconName = 'notifications-outline';
-          if (screen === 'Setting') iconName = 'settings-outline';
-          if (screen === 'Profile') iconName = 'person-outline';
+      {/* ✅ FIXED BOTTOM NAVIGATION */}
+      <View style={styles.bottomNav}>
+        <TouchableOpacity onPress={() => setScreen('HomeFeed')}>
+          <CustomAppIcon name="home-outline" size={26} />
+        </TouchableOpacity>
 
-          return (
-            <TouchableOpacity
-              key={screen}
-              onPress={() => {
-                if (screen === 'Profile') setScreen('EditProfile');
-                else if (screen === 'Setting') setScreen('Profile');
-                else setCurrentBottomScreen(screen);
-              }}
-              style={{ alignItems: 'center' }}
-            >
-              <CustomAppIcon
-                name={iconName}
-                size={28}
-                color={currentBottomScreen === screen ? PRIMARY_GOLD : INACTIVE_TAB_COLOR}
-              />
-            </TouchableOpacity>
-          );
-        })}
+        <TouchableOpacity onPress={() => setScreen('Search')}>
+          <CustomAppIcon name="search-outline" size={26} />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => setScreen('Notification')}>
+          <CustomAppIcon name="notifications-outline" size={26} />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => setScreen('Profile')}>
+          <CustomAppIcon name="settings-outline" size={26} />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => setScreen('EditProfile')}>
+          <CustomAppIcon name="person-outline" size={26} />
+        </TouchableOpacity>
       </View>
-
-      {/* Create Post Modal */}
-      <Modal visible={modalVisible} animationType="slide" transparent={true}>
-        <View style={{ flex: 1, justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.7)' }}>
-          <View style={{ backgroundColor: BG_DARK, margin: 20, padding: 20, borderRadius: 10 }}>
-            <Text style={{ color: TEXT_LIGHT, fontSize: 18, marginBottom: 10 }}>Create Post</Text>
-            <TextInput
-              placeholder="What's on your mind?"
-              placeholderTextColor="#888"
-              value={newPostText}
-              onChangeText={setNewPostText}
-              style={{ backgroundColor: '#222', color: TEXT_LIGHT, padding: 10, borderRadius: 8, marginBottom: 10 }}
-            />
-            <Button title="Pick Image" onPress={openImagePicker} />
-            {newPostImage && <Image source={newPostImage} style={{ width: '100%', height: 200, marginTop: 10, borderRadius: 8 }} />}
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 15 }}>
-              <Button title="Cancel" onPress={() => setModalVisible(false)} color="#888" />
-              <Button title="Post" onPress={createPost} color={PRIMARY_GOLD} />
-            </View>
-          </View>
-        </View>
-      </Modal>
     </SafeAreaView>
   );
 };
 
 // Styles
 const styles = {
-  feedPost: { marginBottom: 20, backgroundColor: SECONDARY_DARK, borderRadius: 10, overflow: 'hidden', paddingBottom: 15, marginHorizontal: 15 },
-  postHeader: { flexDirection: 'row', alignItems: 'center', padding: 15, paddingBottom: 10 },
-  postAvatar: { width: 40, height: 40, borderRadius: 20, marginRight: 10, backgroundColor: '#3B82F6' },
-  postUserInfo: { flex: 1, justifyContent: 'center' },
-  postUsername: { fontSize: 15, fontWeight: 'bold', color: TEXT_LIGHT },
-  postTime: { fontSize: 12, color: INACTIVE_TAB_COLOR },
-  bookmarkIcon: { padding: 5 },
-  postTextGold: { fontSize: 15, color: PRIMARY_GOLD, paddingHorizontal: 15, marginBottom: 10, fontWeight: '600' },
-  feedPostImage: { width: '100%', height: width * 0.8, backgroundColor: SECONDARY_DARK },
-  postFooter: { paddingHorizontal: 15, marginTop: 10 },
-  reactionIcons: { flexDirection: 'row', marginVertical: 5 },
-  likeText: { fontSize: 13, color: TEXT_LIGHT, fontWeight: '500', marginTop: 5 },
-  viewCount: { fontSize: 13, color: INACTIVE_TAB_COLOR, marginTop: 2 },
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 15,
+    paddingTop: 10,
+  },
+  welcomeText: {
+    color: INACTIVE_TAB_COLOR,
+    fontSize: 14,
+  },
+  userName: {
+    color: TEXT_LIGHT,
+    fontSize: 22,
+    fontWeight: 'bold',
+  },
+  headerIcons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  tabBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    borderBottomWidth: 0.5,
+    borderBottomColor: '#333',
+    marginBottom: 15,
+    marginTop: 5,
+  },
+  tabItem: {
+    paddingVertical: 10,
+    alignItems: 'center',
+    flex: 1,
+  },
+  tabText: {
+    color: INACTIVE_TAB_COLOR,
+    fontSize: 15,
+    fontWeight: '500',
+  },
+  activeTabText: {
+    color: PRIMARY_GOLD,
+  },
+  activeIndicator: {
+    height: 3,
+    backgroundColor: PRIMARY_GOLD,
+    width: '40%',
+    marginTop: 8,
+    borderRadius: 2,
+  },
+
+  feedPost: { marginBottom: 20, backgroundColor: SECONDARY_DARK, borderRadius: 10, marginHorizontal: 15 },
+  postHeader: { flexDirection: 'row', alignItems: 'center', padding: 15 },
+  postAvatar: { width: 40, height: 40, borderRadius: 20, marginRight: 10 },
+  postUserInfo: { flex: 1 },
+  postUsername: { color: TEXT_LIGHT, fontWeight: 'bold' },
+  postTime: { color: INACTIVE_TAB_COLOR, fontSize: 12 },
+  postTextGold: { color: PRIMARY_GOLD, paddingHorizontal: 15 },
+  feedPostImage: { width: '100%', height: width * 0.8 },
+  postFooter: { padding: 15 },
+  reactionIcons: { flexDirection: 'row', justifyContent: 'space-between', width: '70%' },
+  likeText: { color: TEXT_LIGHT },
+  viewCount: { color: INACTIVE_TAB_COLOR },
+  bottomNav: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: 12,
+    backgroundColor: SECONDARY_DARK,
+  },
 };
 
 export default HomeFeedScreen;
