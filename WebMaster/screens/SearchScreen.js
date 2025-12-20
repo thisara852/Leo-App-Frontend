@@ -12,49 +12,96 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 
-// --- Import local images ---
-// District logos
-const D2_LOGO = require("../assets/Leo-District-Logo-306-D2.png");
-const D3_LOGO = require("../assets/Leo-District-Logo-306-D3.png");
-const D5_LOGO = require("../assets/Leo-District-Logo-306-D5.png");
-const D11_LOGO = require("../assets/Leo-District-Logo-306-D11.png");
-
-// Club logos
-const C1_LOGO = require("../assets/Leo-District-Logo-306-D2.png");
-const C2_LOGO = require("../assets/Leo-District-Logo-306-D3.png");
-const C3_LOGO = require("../assets/Leo-District-Logo-306-D5.png");
-const C4_LOGO = require("../assets/Leo-District-Logo-306-D11.png");
-
-// Colors
+// --- Colors ---
 const PRIMARY_GOLD = "#FFC700";
 const SECONDARY_DARK = "#1F1F1F";
 const INACTIVE_TAB_COLOR = "#888";
 
-// --- Mock Data (updated with local images) ---
+// --- MOCK DATA WITH IMAGE URLs (Uploaded Logos) ---
 const DISTRICT_DATA = [
-  { id: "d1", name: "Leo District D2", location: "@Anuradhapura", image: D2_LOGO },
-  { id: "d2", name: "Leo District D3", location: "@Colombo", image: D3_LOGO },
-  { id: "d3", name: "Leo District D9", location: "@Kandy, Matale, Polonnaruwa, Trincomalee", image: D2_LOGO },
-  { id: "d4", name: "Leo District D6", location: "@Ambalangoda", image: D3_LOGO },
-  { id: "d5", name: "Leo District D5", location: "@Negombo", image: D5_LOGO },
-  { id: "d6", name: "Leo District D11", location: "@Gampaha", image: D11_LOGO },
-  { id: "d7", name: "Leo District D12", location: "@Kurunegala", image: D2_LOGO },
-  { id: "d8", name: "Leo District D1", location: "@Colombo", image: D3_LOGO },
+  {
+    id: "d1",
+    name: "Leo District D2",
+    location: "@Anuradhapura",
+    imageUri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvFlbJqQyFbUexU9icuUm4XIAeCd8Ia7ymVw&s",
+  },
+  {
+    id: "d2",
+    name: "Leo District D3",
+    location: "@Colombo",
+    imageUri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRtQsmAOJAK5osB0Tw5q8E6Wbw1IQo0o39piQ&s",
+  },
+  {
+    id: "d3",
+    name: "Leo District D9",
+    location: "@Kandy, Matale, Polonnaruwa, Trincomalee",
+    imageUri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIST9wcqaiYNmtGqlDefMDWcF8w-Xk-sBGrg&s",
+  },
+  {
+    id: "d4",
+    name: "Leo District D6",
+    location: "@Ambalangoda",
+    imageUri: "https://sliitleo.org/images/club.png",
+  },
+  {
+    id: "d5",
+    name: "Leo District D5",
+    location: "@Negombo",
+    imageUri: "https://media.licdn.com/dms/image/v2/C4D0BAQEpRH5Wii5OvA/company-logo_200_200/company-logo_200_200/0/1630528641580?e=2147483647&v=beta&t=g4ckceExlblKW1i0THM7nT0_vAWjnvM7p7G2H8s_3e4",
+  },
+  {
+    id: "d6",
+    name: "Leo District D11",
+    location: "@Gampaha",
+    imageUri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ0EiVqFMkA-juJ0vDjMb-iv1N6VnZOAtFfqw&s",
+  },
+  {
+    id: "d7",
+    name: "Leo District D12",
+    location: "@Kurunegala",
+    imageUri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTb4rs0Q_v7mjq6xcBqWvX35rg41IroPh3Evg&s",
+  },
+  {
+    id: "d8",
+    name: "Leo District D1",
+    location: "@Colombo",
+    imageUri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS8Na2eWVuEBc4MurYdnhXGXQRRQUqpmjcKcQ&s",
+  },
 ];
 
 const CLUB_DATA = [
-  { id: "c1", name: "Leo Club of Colombo", location: null, image: C1_LOGO },
-  { id: "c2", name: "Leo Club of Moratuwa", location: null, image: C2_LOGO },
-  { id: "c3", name: "Leo Club of Royal Achievers", location: null, image: C3_LOGO },
-  { id: "c4", name: "Leo Club of UOC Alumni", location: null, image: C4_LOGO },
+  {
+    id: "c1",
+    name: "Leo Club of Colombo",
+    location: null,
+    imageUri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS8Na2eWVuEBc4MurYdnhXGXQRRQUqpmjcKcQ&s",
+  },
+  {
+    id: "c2",
+    name: "Leo Club of Moratuwa",
+    location: null,
+    imageUri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNJIPdpETWGu-SOug-Tg9kATYwxfgeyeXrsg&s",
+  },
+  {
+    id: "c3",
+    name: "Leo Club of Royal Achievers",
+    location: null,
+    imageUri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpo1IY7JKKC7_IrBbWI964qwBasoYHtK_oRQ&s",
+  },
+  {
+    id: "c4",
+    name: "Leo Club of UOC Alumni",
+    location: null,
+    imageUri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVFyhxhAz9Zz3r6neO7BxXj6Vt26LjztBmwA&s",
+  },
 ];
 
-// --- Custom Icon Component ---
+// --- Custom Icon ---
 const CustomAppIcon = ({ name, size = 24, color }) => (
   <Icon name={name} size={size} color={color} />
 );
 
-// --- Bottom Navigation Component ---
+// --- Bottom Navigation ---
 const BottomNav = ({ currentScreen, setScreen }) => (
   <View style={styles.bottomNav}>
     {["HomeFeed", "Search", "Notification", "Setting", "Profile"].map(
@@ -98,7 +145,7 @@ const BottomNav = ({ currentScreen, setScreen }) => (
   </View>
 );
 
-// --- List Item Component ---
+// --- List Item ---
 const ListItem = ({ item, setScreen }) => (
   <TouchableOpacity
     style={styles.listItemContainer}
@@ -108,19 +155,18 @@ const ListItem = ({ item, setScreen }) => (
           districtId: item.id,
           districtName: item.name,
         });
-        return;
-      }
-
-      if (item.id.startsWith("c")) {
+      } else {
         setScreen("Clubs", {
           clubId: item.id,
           clubName: item.name,
         });
-        return;
       }
     }}
   >
-    <Image style={styles.entityImage} source={item.image ? item.image : { uri: item.imageUri }} />
+    <Image
+      style={styles.entityImage}
+      source={{ uri: item.imageUri }}
+    />
     <View style={styles.textContainer}>
       <Text style={styles.entityName}>{item.name}</Text>
       {item.location && (
@@ -130,10 +176,11 @@ const ListItem = ({ item, setScreen }) => (
   </TouchableOpacity>
 );
 
-// --- Main Search Screen ---
+// --- Main Screen ---
 const SearchScreen = ({ setScreen }) => {
   const [activeTab, setActiveTab] = useState("District");
-  const [currentBottomScreen, setCurrentBottomScreen] = useState("HomeFeed");
+  const [currentBottomScreen, setCurrentBottomScreen] =
+    useState("Search");
 
   const dataToDisplay =
     activeTab === "District" ? DISTRICT_DATA : CLUB_DATA;
@@ -170,14 +217,7 @@ const SearchScreen = ({ setScreen }) => {
             ]}
             onPress={() => setActiveTab("District")}
           >
-            <Text
-              style={[
-                styles.toggleText,
-                activeTab === "District" && styles.activeToggleText,
-              ]}
-            >
-              District
-            </Text>
+            <Text style={styles.toggleText}>District</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -187,14 +227,7 @@ const SearchScreen = ({ setScreen }) => {
             ]}
             onPress={() => setActiveTab("Clubs")}
           >
-            <Text
-              style={[
-                styles.toggleText,
-                activeTab === "Clubs" && styles.activeToggleText,
-              ]}
-            >
-              Clubs
-            </Text>
+            <Text style={styles.toggleText}>Clubs</Text>
           </TouchableOpacity>
         </View>
 
@@ -257,7 +290,6 @@ const styles = StyleSheet.create({
     borderColor: "#333",
   },
   toggleText: { color: "#FFF", fontSize: 15, fontWeight: "600" },
-  activeToggleText: { color: "#FFF" },
   listContent: { paddingBottom: 100 },
   listItemContainer: {
     flexDirection: "row",
@@ -271,9 +303,9 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 25,
     marginRight: 15,
-    backgroundColor: "#333",
     borderWidth: 1,
-    borderColor: "#FFC700",
+    borderColor: PRIMARY_GOLD,
+    backgroundColor: "#222",
   },
   textContainer: { justifyContent: "center" },
   entityName: { color: "#FFF", fontSize: 16, fontWeight: "bold" },
