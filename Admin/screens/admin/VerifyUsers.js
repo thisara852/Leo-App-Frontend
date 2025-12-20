@@ -1,117 +1,169 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput } from 'react-native';
+import {
+    StyleSheet,
+    Text,
+    View,
+    TouchableOpacity,
+    SafeAreaView,
+    FlatList,
+    Alert,
+    StatusBar,
+    TextInput,
+    Dimensions
+} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-const UserVerification = () => {
-  const [requests, setRequests] = useState([
-    { id: 1, name: 'John Doe', district: 'MD306', status: 'Pending' },
-    { id: 2, name: 'Nisal Perera', district: '306A', status: 'Pending' },
-    { id: 3, name: 'Sajith Fernando', district: '306B', status: 'Pending' },
-    { id: 4, name: 'Amandi Silva', district: '306C', status: 'Pending' },
-    { id: 5, name: 'Shehan Kumara', district: '306A1', status: 'Pending' },
-  ]);
+const { width } = Dimensions.get('window');
 
-  const [search, setSearch] = useState('');
+const VerifyUsers = ({ navigation }) => {
+    const [search, setSearch] = useState('');
+    
+    // Mock Data representing different types of logins
+    const [users, setUsers] = useState([
+        {
+            id: '101',
+            name: 'District 306-B1',
+            email: 'it.306b1@leo.org',
+            type: 'District',
+            isVerifiedEmail: true,
+            role: 'Webmaster'
+        },
+        {
+            id: '102',
+            name: 'Leo Club of Moratuwa',
+            email: 'moratuwaleos@leo.org',
+            type: 'Club',
+            isVerifiedEmail: true,
+            role: 'Webmaster'
+        },
+        {
+            id: '103',
+            name: 'Saman Kumara',
+            email: 'saman99@gmail.com',
+            type: 'Regular',
+            isVerifiedEmail: false,
+            role: 'Member'
+        },
+        {
+            id: '104',
+            name: 'Leo Club of Kandy',
+            email: 'kandyleos@leo.org',
+            type: 'Club',
+            isVerifiedEmail: false,
+            role: 'Webmaster'
+        }
+    ]);
 
-  const filteredRequests = requests.filter(req =>
-    req.name.toLowerCase().includes(search.toLowerCase())
-  );
+    const handleVerify = (id) => {
+        Alert.alert("Verification Success", "User account has been officially activated.");
+        setUsers(users.filter(u => u.id !== id));
+    };
 
-  const handleDecision = (id, decision) => {
-    setRequests(requests.map(req => req.id === id ? { ...req, status: decision } : req));
-    alert(`User ${decision}`);
-  };
+    const renderUser = ({ item }) => {
+        const isOfficial = item.type === 'Club' || item.type === 'District';
 
-  return (
-    <View style={styles.container}>
-      {/* User List */}
-      <FlatList
-        data={filteredRequests}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Text style={styles.name}>{item.name}</Text>
-            <Text style={styles.district}>District: {item.district}</Text>
-            <Text style={styles.status}>Status: {item.status}</Text>
+        return (
+            <View style={styles.userCard}>
+                <View style={styles.cardInfo}>
+                    <View style={styles.nameRow}>
+                        <Text style={styles.userName}>{item.name}</Text>
+                        {isOfficial && (
+                            <View style={styles.webmasterBadge}>
+                                <Text style={styles.webmasterText}>WEBMASTER</Text>
+                            </View>
+                        )}
+                    </View>
+                    
+                    <Text style={styles.userEmail}>{item.email}</Text>
+                    
+                    <View style={styles.statusRow}>
+                        <View style={[styles.statusIndicator, { backgroundColor: item.isVerifiedEmail ? '#4CAF50' : '#FF4444' }]} />
+                        <Text style={styles.statusLabel}>
+                            {item.isVerifiedEmail ? 'Email Verified' : 'Email Unverified'}
+                        </Text>
+                        <Text style={styles.typeLabel}> • {item.type} Account</Text>
+                    </View>
+                </View>
 
-            <View style={styles.actions}>
-              <TouchableOpacity
-                style={styles.approve}
-                onPress={() => handleDecision(item.id, 'Approved')}
-              >
-                <Text style={styles.btnText}>Approve</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.reject}
-                onPress={() => handleDecision(item.id, 'Rejected')}
-              >
-                <Text style={styles.btnText}>Reject</Text>
-              </TouchableOpacity>
+                <TouchableOpacity 
+                    style={[styles.verifyBtn, { opacity: item.isVerifiedEmail ? 1 : 0.6 }]} 
+                    onPress={() => handleVerify(item.id)}
+                >
+                    <Icon name="shield-checkmark" size={20} color="#000" />
+                </TouchableOpacity>
             </View>
-          </View>
-        )}
-      />
-    </View>
-  );
-  
+        );
+    };
+
+    return (
+        <SafeAreaView style={styles.container}>
+            <StatusBar barStyle="light-content" />
+            
+            {/* TOP HEADER - UPDATED STYLE */}
+            <View style={styles.header}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+                    <Icon name="arrow-back" size={24} color="#FFF" />
+                </TouchableOpacity>
+                <Text style={styles.headerTitle}>Account Authority</Text>
+                <View style={styles.badgeCount}>
+                    <Text style={styles.badgeText}>{users.length}</Text>
+                </View>
+            </View>
+
+            {/* Search */}
+            <View style={styles.searchSection}>
+                <View style={styles.searchBox}>
+                    <Icon name="search" size={18} color="#666" style={{ marginLeft: 15 }} />
+                    <TextInput 
+                        placeholder="Search by Email or Name" 
+                        placeholderTextColor="#444" 
+                        style={styles.input}
+                        value={search}
+                        onChangeText={setSearch}
+                    />
+                </View>
+            </View>
+
+            <FlatList
+                data={users.filter(u => u.name.toLowerCase().includes(search.toLowerCase()))}
+                keyExtractor={item => item.id}
+                renderItem={renderUser}
+                contentContainerStyle={{ padding: 15 }}
+                ListEmptyComponent={<Text style={styles.emptyText}>No users found.</Text>}
+            />
+        </SafeAreaView>
+    );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: '#000' },
+    container: { flex: 1, backgroundColor: '#000' },
+    
+    // Header following ManagePosts style
+    header: { flexDirection: 'row', alignItems: 'center', padding: 20, justifyContent: 'space-between' },
+    backBtn: { width: 45, height: 45, borderRadius: 15, backgroundColor: '#111', justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#222' },
+    headerTitle: { color: '#FFF', fontSize: 18, fontWeight: 'bold' },
+    badgeCount: { backgroundColor: '#FFC700', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 12 },
+    badgeText: { color: '#000', fontWeight: 'bold', fontSize: 12 },
 
-  // TOP BAR SPACING FIXED
-  topBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 35,   // 👈 moved icon down
-    marginBottom: 20,
-  },
-  title: { fontSize: 24, fontWeight: 'bold', marginLeft: 10, color: '#FFD700'},
+    searchSection: { paddingHorizontal: 20, marginBottom: 10 },
+    searchBox: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#111', height: 50, borderRadius: 15, borderWidth: 1, borderColor: '#222' },
+    input: { flex: 1, color: '#FFF', marginLeft: 10 },
 
-  search: {
-    borderWidth: 1,
-    padding: 10,
-    marginBottom: 15,
-    borderRadius: 8,
-    backgroundColor: '#BAB5B5',
-    borderColor: '#ddd',
-  },
+    userCard: { backgroundColor: '#111', borderRadius: 25, padding: 20, marginBottom: 15, flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: '#1A1A1A' },
+    cardInfo: { flex: 1 },
+    nameRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 5 },
+    userName: { color: '#FFF', fontSize: 16, fontWeight: 'bold' },
+    webmasterBadge: { backgroundColor: '#FFC700', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, marginLeft: 10 },
+    webmasterText: { color: '#000', fontSize: 8, fontWeight: 'bold' },
+    userEmail: { color: '#888', fontSize: 13, marginBottom: 10 },
+    
+    statusRow: { flexDirection: 'row', alignItems: 'center' },
+    statusIndicator: { width: 6, height: 6, borderRadius: 3, marginRight: 6 },
+    statusLabel: { color: '#EEE', fontSize: 11 },
+    typeLabel: { color: '#444', fontSize: 11 },
 
-  card: {
-    backgroundColor: '#111',
-    padding: 18,
-    marginVertical: 6,
-    borderRadius: 12,
-    elevation: 2,
-    borderWidth: 1,
-    borderColor: '#FFD70030',
-  },
-  name: { fontSize: 18, fontWeight: 'bold', color: '#fff' },
-  district: { fontSize: 14, marginTop: 3, color: '#fff' },
-  status: { fontSize: 14, marginTop: 3, color: '#fff' },
-
-  actions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 15,
-  },
-
-  approve: {
-    backgroundColor: '#FFD700',
-    padding: 10,
-    borderRadius: 8,
-    width: '48%',
-    alignItems: 'center',
-  },
-  reject: {
-    backgroundColor: '#BAB5B5',
-    padding: 10,
-    borderRadius: 8,
-    width: '48%',
-    alignItems: 'center',
-  },
-  btnText: { color: '#000', fontWeight: 'bold' },
+    verifyBtn: { width: 48, height: 48, backgroundColor: '#FFC700', borderRadius: 16, justifyContent: 'center', alignItems: 'center', marginLeft: 15 },
+    emptyText: { color: '#444', textAlign: 'center', marginTop: 50 }
 });
 
-export default UserVerification;
+export default VerifyUsers;
