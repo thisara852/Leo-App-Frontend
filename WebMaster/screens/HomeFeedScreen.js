@@ -34,7 +34,6 @@ const HomeHeader = ({ setScreen }) => (
   <View style={styles.headerContainer}>
     <View>
       <Text style={styles.welcomeText}>Welcome Back!</Text>
-      <Text style={styles.userName}>Akarsha</Text>
     </View>
 
     <View style={styles.headerIcons}>
