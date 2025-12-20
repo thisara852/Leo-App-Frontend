@@ -465,30 +465,7 @@ const LeoApp = () => {
 
             {renderScreen()}
 
-            {/* --- Global Bottom Navigation (Hidden on Chat Screen) --- */}
-            {currentScreen !== 'Chat' && (
-                <View style={styles.bottomNav}>
-                    <TouchableOpacity style={styles.navItem} onPress={() => setCurrentScreen('Profile')}>
-                        <Text style={currentScreen === 'Profile' ? styles.navTextActive : styles.navText}>🏠</Text>
-                        <Text style={currentScreen === 'Profile' ? styles.navLabelActive : styles.navLabel}>Home</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.navItem}>
-                        <Text style={styles.navText}>🔔</Text>
-                        <Text style={styles.navLabel}>Notification</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.navItemCenter}>
-                        <View style={styles.plusButton}><Text style={styles.plusText}>+</Text></View>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.navItem} onPress={() => setCurrentScreen('Search')}>
-                        <Text style={currentScreen === 'Search' ? styles.navTextActive : styles.navText}>🔍</Text>
-                        <Text style={currentScreen === 'Search' ? styles.navLabelActive : styles.navLabel}>Search</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.navItem}>
-                        <Text style={styles.navText}>👤</Text>
-                        <Text style={styles.navLabel}>Me</Text>
-                    </TouchableOpacity>
-                </View>
-            )}
+           
         </SafeAreaView>
     );
 };
@@ -894,61 +871,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         marginTop: 2,
     },
-    // --- Bottom Nav Styles ---
-    bottomNav: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        alignItems: 'flex-start',
-        backgroundColor: '#000',
-        borderTopColor: '#1A1A1A',
-        borderTopWidth: 1,
-        paddingTop: 10,
-        paddingBottom: 20,
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        height: 80,
-        zIndex: 100,
-    },
-    navItem: {
-        alignItems: 'center',
-        paddingHorizontal: 5,
-    },
-    navItemCenter: {
-        alignItems: 'center',
-        marginTop: -20,
-    },
-    navText: {
-        color: '#888',
-        fontSize: 24,
-    },
-    navTextActive: {
-        color: '#FFF',
-        fontSize: 24,
-    },
-    navLabel: {
-        color: '#888',
-        fontSize: 12,
-    },
-    navLabelActive: {
-        color: '#FFF',
-        fontSize: 12,
-    },
-    plusButton: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        backgroundColor: '#FFC700',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    plusText: {
-        color: '#000',
-        fontSize: 30,
-        lineHeight: 30,
-        fontWeight: 'bold',
-    },
+    
     // --- Chat Screen Styles (New) ---
     chatScreenContainer: {
         flex: 1,
