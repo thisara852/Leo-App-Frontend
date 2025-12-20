@@ -12,7 +12,7 @@ import {
     StatusBar,
     Dimensions,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons'; // For back icon
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -55,6 +55,7 @@ const InformationTab = () => {
             </View>
             <View style={styles.infoSection}>
                 <Text style={styles.sectionTitle}>District Leadership</Text>
+                {/* FIXED: Replaced <div> with <View> */}
                 <View style={styles.leadershipToggle}>
                     <TouchableOpacity onPress={() => setLeadershipTab('Past')}>
                         <Text style={[styles.leadershipTab, leadershipTab === 'Past' && styles.activeLeadershipTab]}>Past</Text>
@@ -87,6 +88,7 @@ const ClubsTab = () => (
     <View style={styles.contentContainer}>
         <FlatList
             data={CLUB_DATA}
+            scrollEnabled={false}
             keyExtractor={item => item.id}
             renderItem={({ item }) => (
                 <View style={styles.clubCard}>
@@ -114,16 +116,16 @@ const EventTab = () => (
     </View>
 );
 
-const EditProfile = () => {
+// ✅ RECEIVED setScreen FROM App.js
+const EditProfile = ({ setScreen }) => {
     const [activeTab, setActiveTab] = useState('Information');
-    const [isEditMode, setIsEditMode] = useState(false); // For editing profile
+    const [isEditMode, setIsEditMode] = useState(false);
 
     const [name, setName] = useState('Leo District D6');
     const [location, setLocation] = useState('Kegalle');
 
     const renderContent = () => {
         if (isEditMode) {
-            // EDIT PROFILE FORM
             return (
                 <View style={styles.contentContainer}>
                     <Text style={styles.sectionTitle}>Edit Profile</Text>
@@ -148,7 +150,6 @@ const EditProfile = () => {
             );
         }
 
-        // NORMAL TABS VIEW
         switch (activeTab) {
             case 'Information': return <InformationTab />;
             case 'List Of Clubs': return <ClubsTab />;
@@ -161,26 +162,28 @@ const EditProfile = () => {
         <SafeAreaView style={styles.safeArea}>
             <StatusBar barStyle="light-content" backgroundColor="#000" />
             <ScrollView>
-                {/* Top Back Icon */}
+                {/* ✅ FIXED NAVIGATION LOGIC */}
                 <View style={styles.topBar}>
-                    <TouchableOpacity onPress={() => alert('Back pressed')}>
+                    <TouchableOpacity onPress={() => setScreen('HomeFeed')}>
                         <Icon name="arrow-back" size={25} color="#FFF" />
                     </TouchableOpacity>
                     <Text style={styles.topBarTitle}>Profile</Text>
-                    <View style={{ width: 25 }} /> {/* placeholder for alignment */}
+                    <View style={{ width: 25 }} />
                 </View>
 
                 <Image style={styles.bannerImage} source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmLpwp744hLn7_102-K3Njo9c5g4jOPFA9jQ&s' }} />
 
                 <View style={styles.profileSection}>
                     <Image style={styles.profileImage} source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIST9wcqaiYNmtGqlDefMDWcF8w-Xk-sBGrg&s' }} />
-                    {isEditMode ? null : <>
-                        <Text style={styles.districtName}>{name}</Text>
-                        <Text style={styles.districtLocation}>{location}</Text>
-                        <TouchableOpacity style={styles.editProfileButton} onPress={() => setIsEditMode(true)}>
-                            <Text style={styles.editProfileText}>Edit Profile</Text>
-                        </TouchableOpacity>
-                    </>}
+                    {!isEditMode && (
+                        <>
+                            <Text style={styles.districtName}>{name}</Text>
+                            <Text style={styles.districtLocation}>{location}</Text>
+                            <TouchableOpacity style={styles.editProfileButton} onPress={() => setIsEditMode(true)}>
+                                <Text style={styles.editProfileText}>Edit Profile</Text>
+                            </TouchableOpacity>
+                        </>
+                    )}
                 </View>
 
                 {!isEditMode && (
@@ -214,7 +217,7 @@ const styles = StyleSheet.create({
     editProfileText: { color: '#000', fontWeight: 'bold', fontSize: 16 },
     tabContainer: { flexDirection: 'row', justifyContent: 'space-between', borderBottomWidth: 1, borderBottomColor: '#1A1A1A', marginVertical: 15, paddingHorizontal: 15 },
     tabButton: { flex: 1, alignItems: 'center', paddingBottom: 10, marginHorizontal: 5 },
-    tabText: { color: '#AAA', fontSize: 16, fontWeight: '600' },
+    tabText: { color: '#AAA', fontSize: 14, fontWeight: '600' },
     activeTabText: { color: '#FFF' },
     tabUnderline: { height: 3, backgroundColor: '#FFC700', width: '100%', position: 'absolute', bottom: -1 },
     contentContainer: { paddingHorizontal: 20, marginBottom: 20 },
