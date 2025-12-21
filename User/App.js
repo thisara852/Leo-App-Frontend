@@ -1,148 +1,66 @@
-// App.js
 import React, { useState } from 'react';
-import { View, StatusBar } from 'react-native';
+import { View, StatusBar, StyleSheet } from 'react-native';
 
-// Screens
-import SplashScreen from './screens/SplashScreen';
-import OnboardingFlow from './screens/OnboardingFlow';
-import AuthScreen from './screens/AuthScreen';
-import CompleteProfileScreen from './screens/CompleteProfileScreen';
-import HomeFeedScreen from './screens/HomeFeedScreen';
-import PostDetailScreen from './screens/PostDetailScreen';
-import ProfileScreen from './screens/ProfileScreen';
-import EditProfileScreen from './screens/EditProfile';
-import SearchScreen from './screens/SearchScreen';
-import NotificationScreen from './screens/NotificationScreen';
-import StoryViewScreen from './screens/StoryViewScreen';
-
-// ⭐ NEWLY ADDED — IMPORTANT
-import DistrictScreen from './screens/District';
-import ClubsScreen from './screens/Clubs';
-
-// Styles
-import { styles } from './styles';
+// --- Imports ---
+import SplashScreen from './Screens/SplashScreen'; 
+import OnboardingFlow from './Screens/OnboardingFlow';
+import AuthScreen from './Screens/AuthScreen';
+import CompleteProfileScreen from './Screens/CompleteProfileScreen';
+import HomeFeedScreen from './Screens/HomeFeedScreen';
+import PostDetailScreen from './Screens/PostDetailScreen';
+import ProfileScreen from './Screens/ProfileScreen';
+import EditProfileScreen from './Screens/EditProfile';
+import SearchScreen from './Screens/SearchScreen';
+import NotificationScreen from './Screens/NotificationScreen';
+import StoryViewScreen from './Screens/StoryViewScreen';
+import DistrictScreen from './Screens/District';
+import ClubsScreen from './Screens/Clubs';
+import SettingScreen from './Screens/SettingScreen'; // Ensure this path matches your file name
 
 const App = () => {
   const [screen, setScreen] = useState('Splash');
   const [storyImage, setStoryImage] = useState(null);
-
-  // ⭐ Screen params state
   const [params, setParams] = useState(null);
 
-  // ⭐ Custom Navigation Handler
   const navigate = (name, screenParams = null) => {
     setParams(screenParams);
     setScreen(name);
   };
 
-  const handleAuthSuccess = () => navigate('CompleteProfile');
-
-  const handleIconClick = (icon) => {
-    if (icon === 'Profile') navigate('EditProfile');
-    if (icon === 'Setting') navigate('Profile');
-  };
-
-  const openStory = (imageUri) => {
-    setStoryImage(imageUri);
-    navigate('StoryView');
-  };
-
-  const closeStory = () => {
-    setStoryImage(null);
-    navigate('HomeFeed');
-  };
-
-  // 🔥 ALL SCREENS HANDLED HERE
   const renderScreen = () => {
     switch (screen) {
-      case 'Splash':
-        return <SplashScreen setScreen={navigate} />;
-
-      case 'Onboarding':
-        return <OnboardingFlow setScreen={navigate} />;
-
-      case 'Login':
-        return (
-          <AuthScreen
-            onLoginSuccess={handleAuthSuccess}
-            onSignupSuccess={handleAuthSuccess}
-          />
-        );
-
-      case 'CompleteProfile':
-        return <CompleteProfileScreen setScreen={navigate} />;
-
-      case 'HomeFeed':
-        return (
-          <HomeFeedScreen
-            setScreen={navigate}
-            openStory={openStory}
-            handleIconClick={handleIconClick}
-          />
-        );
-
-      case 'PostDetail':
-        return <PostDetailScreen setScreen={navigate} />;
-
-      case 'Profile':
-        return <ProfileScreen setScreen={navigate} />;
-
-      case 'EditProfile':
-        return <EditProfileScreen setScreen={navigate} />;
-
-      case 'Search':
-        return <SearchScreen setScreen={navigate} />;
-
-      case 'Notification':
-        return <NotificationScreen setScreen={navigate} />;
-
-      case 'StoryView':
-        return (
-          <StoryViewScreen
-            storyImage={storyImage}
-            navigation={{ goBack: closeStory }}
-            onClose={closeStory}
-            setScreen={navigate}
-          />
-        );
-
-      // ⭐✔ NEWLY ADDED — NOW IT WORKS
-      case 'District':
-        return (
-          <DistrictScreen
-            setScreen={navigate}
-            districtId={params?.districtId}
-            districtName={params?.districtName}
-          />
-        );
-
-      // ⭐ Optional for clubs
-      case 'Clubs':
-        return (
-          <ClubsScreen
-            setScreen={navigate}
-            clubId={params?.clubId}
-            clubName={params?.clubName}
-          />
-        );
-
-      default:
-        return (
-          <HomeFeedScreen
-            setScreen={navigate}
-            openStory={openStory}
-            handleIconClick={handleIconClick}
-          />
-        );
+      case 'Splash': return <SplashScreen setScreen={navigate} />;
+      case 'Onboarding': return <OnboardingFlow setScreen={navigate} />;
+      case 'Auth':
+      case 'Login': return <AuthScreen onLoginSuccess={() => navigate('CompleteProfile')} setScreen={navigate} />;
+      case 'CompleteProfile': return <CompleteProfileScreen setScreen={navigate} />;
+      case 'HomeFeed': return <HomeFeedScreen setScreen={navigate} openStory={(img) => { setStoryImage(img); navigate('StoryView'); }} />;
+      case 'PostDetail': return <PostDetailScreen setScreen={navigate} params={params} />;
+      case 'Profile': return <ProfileScreen setScreen={navigate} />;
+      case 'EditProfile': return <EditProfileScreen setScreen={navigate} />;
+      case 'Search': return <SearchScreen setScreen={navigate} />;
+      case 'Notification': return <NotificationScreen setScreen={navigate} />;
+      case 'Setting': return <SettingScreen setScreen={navigate} />; // Added this case
+      case 'StoryView': return <StoryViewScreen storyImage={storyImage} onClose={() => navigate('HomeFeed')} setScreen={navigate} />;
+      case 'District': return <DistrictScreen setScreen={navigate} districtId={params?.districtId} />;
+      case 'Clubs': return <ClubsScreen setScreen={navigate} clubId={params?.clubId} />;
+      default: return <HomeFeedScreen setScreen={navigate} />;
     }
   };
 
   return (
-    <View style={styles.appContainer}>
-      <StatusBar barStyle="light-content" backgroundColor="#000" />
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" />
       {renderScreen()}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
+  },
+});
 
 export default App;
