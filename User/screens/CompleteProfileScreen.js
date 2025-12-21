@@ -1,3 +1,4 @@
+// screens/CompleteProfileScreen.js
 import React, { useState } from 'react';
 import {
   SafeAreaView,
@@ -6,21 +7,21 @@ import {
   Text,
   TouchableOpacity,
   Image,
-  TextInput, // <-- IMPORT ADDED
-  StatusBar as RNStatusBar
+  StatusBar as RNStatusBar,
+  StyleSheet,
+  Alert
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
+// ✅ Using Expo-compatible icons
+import { Ionicons } from '@expo/vector-icons'; 
 
+// --- Constants (Matching your project theme) ---
 const PRIMARY_GOLD = '#FFC107';
 const BG_DARK = '#000000';
 const TEXT_LIGHT = '#F3F4F6';
 const INACTIVE_TAB_COLOR = '#9CA3AF';
 const SECONDARY_DARK = '#1F1F1F';
 
-const CustomAppIcon = ({ name, size = 20, color = TEXT_LIGHT }) => (
-  <Icon name={name} size={size} color={color} />
-);
-
+// --- Internal Components (Replacing missing imports for standalone stability) ---
 const DarkInput = ({ label, placeholder, value, onChangeText }) => (
   <View style={{ width: '100%', marginBottom: 15 }}>
     {label && <Text style={{ color: TEXT_LIGHT, marginBottom: 5 }}>{label}</Text>}
@@ -36,62 +37,148 @@ const DarkInput = ({ label, placeholder, value, onChangeText }) => (
   </View>
 );
 
-const GoldButton = ({ children, onPress, style }) => (
-  <TouchableOpacity
-    onPress={onPress}
-    style={[{ backgroundColor: PRIMARY_GOLD, paddingVertical: 12, borderRadius: 8, marginTop: 10, alignItems: 'center' }, style]}
-  >
-    <Text style={{ color: '#000', fontWeight: 'bold' }}>{children}</Text>
-  </TouchableOpacity>
-);
-
 const CompleteProfileScreen = ({ setScreen }) => {
   const [club, setClub] = useState('');
   const [year, setYear] = useState('');
   const [role, setRole] = useState('');
 
   const handleSave = () => {
-    setScreen('HomeFeed'); 
+    if (club.trim() && year.trim() && role.trim()) {
+      setScreen('HomeFeed');
+    } else {
+      Alert.alert('Incomplete Profile', 'Please fill in all details to continue.');
+    }
   };
 
+  // ✅ FIX: Using a placeholder URI to prevent "File Not Found" crashes. 
+  // Replace the URI with require('../assets/profile.webp') once the file exists.
+  const profileImage = { uri: 'https://via.placeholder.com/150/1A1A1A/FFC107?text=Leo' };
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: BG_DARK }}>
+    <SafeAreaView style={styles.safeArea}>
       <RNStatusBar barStyle="light-content" backgroundColor={BG_DARK} />
-      <ScrollView contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 30, paddingVertical: 20, paddingBottom: 100 }}>
+      
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
         
         {/* Header */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5 }}>
-          <TouchableOpacity onPress={() => setScreen('Login')} style={{ marginRight: 15 }}>
-            <Icon name="chevron-back-outline" size={24} color={TEXT_LIGHT} />
+        <View style={styles.headerRow}>
+          <TouchableOpacity onPress={() => setScreen('Auth')} style={styles.backButton}>
+            <Ionicons name="chevron-back-outline" size={28} color={TEXT_LIGHT} />
           </TouchableOpacity>
-          <Text style={{ fontSize: 24, fontWeight: 'bold', color: TEXT_LIGHT }}>Complete Your Profile</Text>
+          <Text style={styles.headerTitle}>Complete Your Profile</Text>
         </View>
-        <Text style={{ fontSize: 14, color: INACTIVE_TAB_COLOR, marginBottom: 30, paddingLeft: 40 }}>
+        
+        <Text style={styles.headerSubtitle}>
           Help us personalize your experience
         </Text>
 
-        {/* Avatar */}
-        <View style={{ width: 100, height: 100, borderRadius: 50, backgroundColor: SECONDARY_DARK, alignSelf: 'center', marginVertical: 30, justifyContent: 'center', alignItems: 'center' }}>
-          <Image
-            source={require('../assets/profile.webp')} 
-            style={{ width: 100, height: 100, borderRadius: 50, resizeMode: 'cover' }}
-          />
-          <TouchableOpacity style={{ position: 'absolute', bottom: 0, right: 0, backgroundColor: PRIMARY_GOLD, padding: 8, borderRadius: 15, borderWidth: 2, borderColor: BG_DARK }}>
-            <CustomAppIcon name="pencil-outline" size={16} color="#000" />
-          </TouchableOpacity>
+        {/* Avatar Section */}
+        <View style={styles.avatarContainer}>
+          <View style={styles.imageWrapper}>
+            <Image
+              source={profileImage} 
+              style={styles.avatarImage}
+            />
+            <TouchableOpacity style={styles.editBadge} activeOpacity={0.7}>
+              <Ionicons name="pencil" size={16} color="#000" />
+            </TouchableOpacity>
+          </View>
         </View>
 
-        {/* Profile Inputs */}
-        <DarkInput label="Enter Club :" placeholder="Enter your club name" value={club} onChangeText={setClub} />
-        <DarkInput label="Year :" placeholder="Select your year" value={year} onChangeText={setYear} />
-        <DarkInput label="LEO Club Role :" placeholder="Select your LEO club role" value={role} onChangeText={setRole} />
+        {/* Inputs (Replacing with standard View/TextInput to ensure it runs) */}
+        <Text style={styles.inputLabel}>Enter Club :</Text>
+        <View style={styles.inputBox}>
+          <TextInput 
+            style={styles.textInput} 
+            placeholder="Enter your club name" 
+            placeholderTextColor="#666"
+            value={club}
+            onChangeText={setClub}
+          />
+        </View>
 
-        <GoldButton onPress={handleSave} style={{ marginTop: 40, height: 50 }}>
-          Save & Continue
-        </GoldButton>
+        <Text style={styles.inputLabel}>Year :</Text>
+        <View style={styles.inputBox}>
+          <TextInput 
+            style={styles.textInput} 
+            placeholder="Select your year" 
+            placeholderTextColor="#666"
+            value={year}
+            onChangeText={setYear}
+          />
+        </View>
+
+        <Text style={styles.inputLabel}>LEO Club Role :</Text>
+        <View style={styles.inputBox}>
+          <TextInput 
+            style={styles.textInput} 
+            placeholder="Select your LEO club role" 
+            placeholderTextColor="#666"
+            value={role}
+            onChangeText={setRole}
+          />
+        </View>
+
+        <TouchableOpacity onPress={handleSave} style={styles.goldButton}>
+          <Text style={styles.buttonText}>Save & Continue</Text>
+        </TouchableOpacity>
+
       </ScrollView>
     </SafeAreaView>
   );
 };
+
+// Required for the inline TextInputs
+import { TextInput } from 'react-native';
+
+const styles = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: BG_DARK },
+  scrollContainer: { paddingHorizontal: 25, paddingVertical: 20, paddingBottom: 50 },
+  headerRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 5 },
+  backButton: { marginRight: 10 },
+  headerTitle: { fontSize: 22, fontWeight: 'bold', color: TEXT_LIGHT },
+  headerSubtitle: { fontSize: 14, color: INACTIVE_TAB_COLOR, marginBottom: 20, paddingLeft: 38 },
+  avatarContainer: { alignItems: 'center', marginVertical: 30 },
+  imageWrapper: {
+    width: 110,
+    height: 110,
+    borderRadius: 55,
+    backgroundColor: SECONDARY_DARK,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+    borderWidth: 1,
+    borderColor: '#333'
+  },
+  avatarImage: { width: 100, height: 100, borderRadius: 50 },
+  editBadge: { 
+    position: 'absolute', 
+    bottom: 0, 
+    right: 0, 
+    backgroundColor: PRIMARY_GOLD, 
+    padding: 8, 
+    borderRadius: 20, 
+    borderWidth: 3, 
+    borderColor: BG_DARK 
+  },
+  inputLabel: { color: TEXT_LIGHT, marginBottom: 8, marginTop: 15, fontWeight: '500' },
+  inputBox: { 
+    backgroundColor: '#111', 
+    borderWidth: 1, 
+    borderColor: '#333', 
+    borderRadius: 8, 
+    paddingHorizontal: 15 
+  },
+  textInput: { color: '#FFF', height: 50 },
+  goldButton: { 
+    backgroundColor: PRIMARY_GOLD, 
+    height: 55, 
+    borderRadius: 10, 
+    marginTop: 40, 
+    justifyContent: 'center', 
+    alignItems: 'center' 
+  },
+  buttonText: { color: '#000', fontSize: 16, fontWeight: 'bold' }
+});
 
 export default CompleteProfileScreen;
