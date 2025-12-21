@@ -242,4 +242,4 @@ const styles = StyleSheet.create({
   actionBtnText: { color: COLORS.primary, fontWeight: 'bold', fontSize: 13 },
 });
 
-export default NotificationsScreen;
+export default NotificationsScreen; 
